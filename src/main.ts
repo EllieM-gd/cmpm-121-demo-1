@@ -2,7 +2,7 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
-const gameName = "My empty game";
+const gameName = "Fish Game";
 document.title = gameName;
 
 //Declare number for counter
@@ -10,7 +10,8 @@ let counter: number = 0;
 const nets: number = 2;
 const netValue: number = 1;
 //Start the check for autoclicks
-setInterval(autoClicker, 1000);
+//setInterval(autoClicker, 1000);
+requestAnimationFrame(autoClicker);
 //Event Handler for clicking
 function handleEvent(event: Event) {
   if (event.type === "click") {
@@ -40,14 +41,22 @@ function updateText() {
   if (existingDiv) {
     app.removeChild(existingDiv);
   }
+  const formatCounter = counter.toFixed(2);
   const newDiv = document.createElement("div");
-  const newContent = document.createTextNode(`${counter} Fish! 🎣`);
+  const newContent = document.createTextNode(`${formatCounter} Fish! 🎣`);
   newDiv.appendChild(newContent);
   app.append(newDiv);
 }
 
+let saveLastTime: number | undefined;
 function autoClicker() {
-    counter += nets * netValue
-
-    updateText()
+  if (saveLastTime === undefined) {
+    saveLastTime = performance.now();
+  }
+  const currentTime = performance.now();
+  const deltaTime = currentTime - saveLastTime;
+  counter += (nets * netValue * deltaTime) / 1000;
+  updateText();
+  saveLastTime = performance.now();
+  requestAnimationFrame(autoClicker);
 }
