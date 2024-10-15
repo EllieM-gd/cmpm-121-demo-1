@@ -7,7 +7,11 @@ document.title = gameName;
 
 //Declare number for counter
 let counter: number = 0;
-
+const nets: number = 2;
+const netValue: number = 1;
+//Start the check for autoclicks
+setInterval(autoClicker, 1000);
+//Event Handler for clicking
 function handleEvent(event: Event) {
   if (event.type === "click") {
     counter += 1;
@@ -40,4 +44,10 @@ function updateText() {
   const newContent = document.createTextNode(`${counter} Fish! 🎣`);
   newDiv.appendChild(newContent);
   app.append(newDiv);
+}
+
+function autoClicker() {
+    counter += nets * netValue
+
+    updateText()
 }
