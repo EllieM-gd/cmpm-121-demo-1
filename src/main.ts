@@ -7,8 +7,9 @@ document.title = gameName;
 
 //Declare number for counter
 let counter: number = 0;
-const nets: number = 2;
-const netValue: number = 1;
+let nets: number = 0;
+const netValue: number = 0.2;
+let netButtonEnabled: boolean = false;
 //Start the check for autoclicks
 //setInterval(autoClicker, 1000);
 requestAnimationFrame(autoClicker);
@@ -31,6 +32,40 @@ button.textContent = "🐟";
 button.addEventListener("click", handleEvent);
 app.appendChild(button);
 
+//Shop Area
+const newDiv2 = document.createElement("div2");
+newDiv2.style.position = "absolute"; // Allow positioning the element
+newDiv2.style.right = "20px"; // Move it 20px from the right edge
+newDiv2.style.top = "50px"; // Move it 50px from the top
+
+//Net Button
+let netButtonGlob: HTMLButtonElement | undefined;
+function handleNetButton() {
+    //If Button has been used before we will disable and reenable it based on current fish count
+  if (netButtonGlob) {
+    if (counter < 10 && netButtonGlob.disabled == false) {
+      netButtonGlob.disabled = true;
+    } else if (counter >= 10) netButtonGlob.disabled = false;
+  } else { //Otherwise create the button
+    const netButton = document.createElement("button");
+    netButton.textContent = "Purchase - Net - 10 Fish";
+    netButton.addEventListener("click", purchaseButton);
+    newDiv2.appendChild(netButton);
+    app.appendChild(newDiv2);
+    netButtonGlob = netButton;
+    netButtonEnabled = true;
+  }
+}
+
+function purchaseButton(event: Event) {
+  if (event.type === "click") {
+    if (counter >= 10) {
+      counter -= 10;
+      nets += 1;
+    }
+  }
+}
+
 //Run Once On Run
 updateText();
 //Function to update the text on the screen.
@@ -52,6 +87,9 @@ let saveLastTime: number | undefined;
 function autoClicker() {
   if (saveLastTime === undefined) {
     saveLastTime = performance.now();
+  }
+  if (netButtonEnabled == true || counter >= 10) {
+    handleNetButton();
   }
   const currentTime = performance.now();
   const deltaTime = currentTime - saveLastTime;
