@@ -7,22 +7,22 @@ document.title = gameName;
 
 //Declare number for counter
 let counter: number = 1000;
-const purchaseMultiplier: number = 1.15
+const purchaseMultiplier: number = 1.15;
 // ---- NETS ----
 let nets: number = 0;
 const netValue: number = 0.1;
 let netButtonEnabled: boolean = false;
-let netPrice: number = 10
+let netPrice: number = 10;
 // ---- BAIT ----
 let baits: number = 0;
 const baitValue: number = 2;
 let baitButtonEnabled: boolean = false;
-let baitPrice: number = 100
+let baitPrice: number = 100;
 // ---- CREW ----
 let crewmates: number = 0;
 const crewValue: number = 50;
 let crewButtonEnabled: boolean = false;
-let crewPrice: number = 1000
+let crewPrice: number = 1000;
 //Start the check for autoclicks
 //setInterval(autoClicker, 1000);
 requestAnimationFrame(autoClicker);
@@ -41,7 +41,7 @@ app.append(header);
 
 //Button
 const button = document.createElement("button");
-button.textContent = "🐟";
+button.textContent = "🎣";
 button.addEventListener("click", handleEvent);
 app.appendChild(button);
 
@@ -93,7 +93,8 @@ function purchaseNetButton(event: Event) {
       counter -= netPrice;
       nets += 1;
       netPrice *= purchaseMultiplier;
-      if (netButtonGlob !== undefined) netButtonGlob.textContent = `Net - ${netPrice.toFixed(0)} Fish`;
+      if (netButtonGlob !== undefined)
+        netButtonGlob.textContent = `Net - ${netPrice.toFixed(0)} Fish`;
     }
   }
 }
@@ -123,7 +124,8 @@ function purchaseBaitButton(event: Event) {
       counter -= baitPrice;
       baits += 1;
       baitPrice *= purchaseMultiplier;
-      if (baitButtonGlob !== undefined) baitButtonGlob.textContent = `Bait - ${baitPrice.toFixed(0)} Fish`;
+      if (baitButtonGlob !== undefined)
+        baitButtonGlob.textContent = `Bait - ${baitPrice.toFixed(0)} Fish`;
     }
   }
 }
@@ -153,12 +155,11 @@ function purchaseCrewButton(event: Event) {
       counter -= crewPrice;
       crewmates += 1;
       crewPrice *= purchaseMultiplier;
-      if (crewButtonGlob !== undefined) crewButtonGlob.textContent = `Crewmate - ${crewPrice.toFixed(0)} Fish`;
+      if (crewButtonGlob !== undefined)
+        crewButtonGlob.textContent = `Crewmate - ${crewPrice.toFixed(0)} Fish`;
     }
   }
 }
-
-
 
 //Run Once On Run
 updateText();
@@ -174,7 +175,7 @@ function updateText() {
   const newDiv = document.createElement("div");
   const cost = calculateCost();
   const newContent = document.createTextNode(
-    `${formatCounter} Fish! 🎣 ${cost}Fish/sec`
+    `${formatCounter} Fish! 🐟 ${cost}Fish/sec`,
   );
   newDiv.appendChild(newContent);
   app.append(newDiv);
