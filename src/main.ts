@@ -6,16 +6,23 @@ const gameName = "Fish Game";
 document.title = gameName;
 
 //Declare number for counter
-let counter: number = 0;
+let counter: number = 1000;
+const purchaseMultiplier: number = 1.15
+// ---- NETS ----
 let nets: number = 0;
 const netValue: number = 0.1;
 let netButtonEnabled: boolean = false;
+let netPrice: number = 10
+// ---- BAIT ----
 let baits: number = 0;
 const baitValue: number = 2;
 let baitButtonEnabled: boolean = false;
+let baitPrice: number = 100
+// ---- CREW ----
 let crewmates: number = 0;
 const crewValue: number = 50;
 let crewButtonEnabled: boolean = false;
+let crewPrice: number = 1000
 //Start the check for autoclicks
 //setInterval(autoClicker, 1000);
 requestAnimationFrame(autoClicker);
@@ -65,13 +72,13 @@ let netButtonGlob: HTMLButtonElement | undefined;
 function handleNetButton() {
   //If Button has been used before we will disable and reenable it based on current fish count
   if (netButtonGlob) {
-    if (counter < 10 && netButtonGlob.disabled == false) {
+    if (counter < netPrice && netButtonGlob.disabled == false) {
       netButtonGlob.disabled = true;
-    } else if (counter >= 10) netButtonGlob.disabled = false;
+    } else if (counter >= netPrice) netButtonGlob.disabled = false;
   } else {
     //Otherwise create the button
     const netButton = document.createElement("button");
-    netButton.textContent = "Net - 10 Fish";
+    netButton.textContent = `Net - ${netPrice.toFixed(0)} Fish`;
     netButton.addEventListener("click", purchaseNetButton);
     newDiv2.appendChild(netButton);
     app.appendChild(newDiv2);
@@ -80,18 +87,29 @@ function handleNetButton() {
   }
 }
 
-//Net Button
+function purchaseNetButton(event: Event) {
+  if (event.type === "click") {
+    if (counter >= netPrice) {
+      counter -= netPrice;
+      nets += 1;
+      netPrice *= purchaseMultiplier;
+      if (netButtonGlob !== undefined) netButtonGlob.textContent = `Net - ${netPrice.toFixed(0)} Fish`;
+    }
+  }
+}
+
+//Bait Button
 let baitButtonGlob: HTMLButtonElement | undefined;
 function handleBaitButton() {
   //If Button has been used before we will disable and reenable it based on current fish count
   if (baitButtonGlob) {
-    if (counter < 100 && baitButtonGlob.disabled == false) {
+    if (counter < baitPrice && baitButtonGlob.disabled == false) {
       baitButtonGlob.disabled = true;
-    } else if (counter >= 100) baitButtonGlob.disabled = false;
+    } else if (counter >= baitPrice) baitButtonGlob.disabled = false;
   } else {
     //Otherwise create the button
     const baitButton = document.createElement("button");
-    baitButton.textContent = "Bait - 100 Fish";
+    baitButton.textContent = `Bait - ${baitPrice.toFixed(0)} Fish`;
     baitButton.addEventListener("click", purchaseBaitButton);
     newDiv2.appendChild(baitButton);
     app.appendChild(newDiv2);
@@ -101,9 +119,11 @@ function handleBaitButton() {
 }
 function purchaseBaitButton(event: Event) {
   if (event.type === "click") {
-    if (counter >= 100) {
-      counter -= 100;
+    if (counter >= baitPrice) {
+      counter -= baitPrice;
       baits += 1;
+      baitPrice *= purchaseMultiplier;
+      if (baitButtonGlob !== undefined) baitButtonGlob.textContent = `Bait - ${baitPrice.toFixed(0)} Fish`;
     }
   }
 }
@@ -113,13 +133,13 @@ let crewButtonGlob: HTMLButtonElement | undefined;
 function handleCrewButton() {
   //If Button has been used before we will disable and reenable it based on current fish count
   if (crewButtonGlob) {
-    if (counter < 1000 && crewButtonGlob.disabled == false) {
+    if (counter < crewPrice && crewButtonGlob.disabled == false) {
       crewButtonGlob.disabled = true;
-    } else if (counter >= 1000) crewButtonGlob.disabled = false;
+    } else if (counter >= crewPrice) crewButtonGlob.disabled = false;
   } else {
     //Otherwise create the button
     const crewButton = document.createElement("button");
-    crewButton.textContent = "Crewmate - 1000 Fish";
+    crewButton.textContent = `Crewmate - ${crewPrice.toFixed(0)} Fish`;
     crewButton.addEventListener("click", purchaseCrewButton);
     newDiv2.appendChild(crewButton);
     app.appendChild(newDiv2);
@@ -129,21 +149,16 @@ function handleCrewButton() {
 }
 function purchaseCrewButton(event: Event) {
   if (event.type === "click") {
-    if (counter >= 1000) {
-      counter -= 1000;
+    if (counter >= crewPrice) {
+      counter -= crewPrice;
       crewmates += 1;
+      crewPrice *= purchaseMultiplier;
+      if (crewButtonGlob !== undefined) crewButtonGlob.textContent = `Crewmate - ${crewPrice.toFixed(0)} Fish`;
     }
   }
 }
 
-function purchaseNetButton(event: Event) {
-  if (event.type === "click") {
-    if (counter >= 10) {
-      counter -= 10;
-      nets += 1;
-    }
-  }
-}
+
 
 //Run Once On Run
 updateText();
