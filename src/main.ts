@@ -6,7 +6,7 @@ const gameName = "Fish Game";
 document.title = gameName;
 
 //Declare number for counter
-let counter: number = 200;
+let counter: number = 0;
 const purchaseMultiplier: number = 1.15;
 
 interface Item {
@@ -43,7 +43,7 @@ const availableItems: Item[] = [
     count: 0,
     enabled: false,
     buttonReference: rodButton,
-    description: "Catch more fish per click"
+    description: "Catch more fish per click",
   },
   {
     name: "Bait",
@@ -52,7 +52,7 @@ const availableItems: Item[] = [
     count: 0,
     enabled: false,
     buttonReference: baitButton,
-    description: "Bring more fish to you with *Bait*!"
+    description: "Bring more fish to you with *Bait*!",
   },
   {
     name: "Fish Finder",
@@ -61,7 +61,7 @@ const availableItems: Item[] = [
     count: 0,
     enabled: false,
     buttonReference: fishFinderButton,
-    description: "A Radar that leads you towards more fish"
+    description: "A Radar that leads you towards more fish",
   },
   {
     name: "Crewmate",
@@ -70,7 +70,7 @@ const availableItems: Item[] = [
     count: 0,
     enabled: false,
     buttonReference: crewButton,
-    description: "A little help goes a long way"
+    description: "A little help goes a long way",
   },
   {
     name: "Upgrade Ship",
@@ -79,7 +79,7 @@ const availableItems: Item[] = [
     count: 0,
     enabled: false,
     buttonReference: upgradeShip,
-    description: "Manuever faster to find more fish!"
+    description: "Manuever faster to find more fish!",
   },
   {
     name: "Pet Shark",
@@ -88,7 +88,7 @@ const availableItems: Item[] = [
     count: 0,
     enabled: false,
     buttonReference: petSharkButton,
-    description: "This shark is trained to hunt fish and return them to you"
+    description: "This shark is trained to hunt fish and return them to you",
   },
 ];
 
@@ -98,7 +98,7 @@ requestAnimationFrame(autoClicker);
 //Event Handler for clicking
 function handleEvent(event: Event) {
   if (event.type === "click") {
-    counter += (1 + (availableItems[1].count / 2));
+    counter += 1 + availableItems[1].count / 2;
     updateText();
   }
 }
@@ -128,12 +128,12 @@ const globalInvText = document.createTextNode("");
 newDiv3.append(globalInvText);
 function updateInvText() {
   globalInvText.textContent = "";
-  let tempBool: boolean = false
+  let tempBool: boolean = false;
   for (let i = 0; i < availableItems.length; i++) {
     if (availableItems[i].count > 0) {
-      if (tempBool) globalInvText.textContent += '|'
+      if (tempBool) globalInvText.textContent += "|";
       globalInvText.textContent += ` ${availableItems[i].name} - ${availableItems[i].count} `;
-      tempBool = true
+      tempBool = true;
     }
   }
 }
@@ -156,34 +156,43 @@ function handleBuyButtons(index: number) {
     availableItems[index].buttonReference.textContent =
       `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} Fish`;
     //Description declaration
-    const descriptionText = document.createElement("desc")
+    const descriptionText = document.createElement("desc");
     descriptionText.textContent = availableItems[index].description;
-    descriptionText.style.position = "absolute"; 
+    descriptionText.style.position = "absolute";
     descriptionText.hidden = true;
     document.body.appendChild(descriptionText);
     //Add Event Listeners --------
     //On click attempt to purchase item
     availableItems[index].buttonReference.addEventListener(
-      "click", 
+      "click",
       function (event) {
         purchaseButton(event, index);
-      }
+      },
     );
     // Hide and Show description based on if its inside the button or not
-    availableItems[index].buttonReference.addEventListener("mouseenter", function(){
-      descriptionText.hidden = false
-    })
-    availableItems[index].buttonReference.addEventListener("mouseleave", function(){
-      descriptionText.hidden = true
-    })
+    availableItems[index].buttonReference.addEventListener(
+      "mouseenter",
+      function () {
+        descriptionText.hidden = false;
+      },
+    );
+    availableItems[index].buttonReference.addEventListener(
+      "mouseleave",
+      function () {
+        descriptionText.hidden = true;
+      },
+    );
     // Track Mouse for Description location only when hovering the button
-    availableItems[index].buttonReference.addEventListener("mousemove", function(event){
-      if (!descriptionText.hidden){
-        descriptionText.style.left = event.pageX + 10 + "px";
-        descriptionText.style.top = event.pageY + 10 + "px";
-      }
-    })
-    
+    availableItems[index].buttonReference.addEventListener(
+      "mousemove",
+      function (event) {
+        if (!descriptionText.hidden) {
+          descriptionText.style.left = event.pageX + 10 + "px";
+          descriptionText.style.top = event.pageY + 10 + "px";
+        }
+      },
+    );
+
     newDiv2.appendChild(availableItems[index].buttonReference);
     availableItems[index].enabled = true;
   }
@@ -215,7 +224,7 @@ function updateText() {
   const newDiv = document.createElement("div");
   const cost = calculateCost();
   const newContent = document.createTextNode(
-    `${formatCounter} Fish! 🐟 ${cost.toFixed(1)}Fish/sec`
+    `${formatCounter} Fish! 🐟 ${cost.toFixed(1)}Fish/sec`,
   );
   newDiv.appendChild(newContent);
   app.append(newDiv);
