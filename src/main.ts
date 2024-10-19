@@ -6,30 +6,91 @@ const gameName = "Fish Game";
 document.title = gameName;
 
 //Declare number for counter
-let counter: number = 99;
+let counter: number = 200;
 const purchaseMultiplier: number = 1.15;
 
 interface Item {
-  name: string,
-  cost: number,
-  rate: number,
-  count: number,
-  enabled: boolean,
-  buttonReference: HTMLButtonElement
-};
+  name: string;
+  cost: number;
+  rate: number;
+  count: number;
+  enabled: boolean;
+  buttonReference: HTMLButtonElement;
+  description: string;
+}
 const netsButton = document.createElement("button");
+const rodButton = document.createElement("button");
 const crewButton = document.createElement("button");
+const fishFinderButton = document.createElement("button");
 const baitButton = document.createElement("button");
+const upgradeShip = document.createElement("button");
+const petSharkButton = document.createElement("button");
 
-
-
-const availableItems : Item[] = [
-  {name: "Nets", cost: 10, rate: 0.1, count: 0, enabled: false, buttonReference: netsButton},
-  {name: "Bait", cost: 100, rate: 2, count: 0, enabled: false, buttonReference: baitButton},
-  {name: "Crew", cost: 1000, rate: 50, count: 0, enabled: false, buttonReference: crewButton}
+const availableItems: Item[] = [
+  {
+    name: "Nets",
+    cost: 10,
+    rate: 0.2,
+    count: 0,
+    enabled: false,
+    buttonReference: netsButton,
+    description: "A net to catch fish with passively",
+  },
+  {
+    name: "Rod Upgrade",
+    cost: 75,
+    rate: 0,
+    count: 0,
+    enabled: false,
+    buttonReference: rodButton,
+    description: "Catch more fish per click"
+  },
+  {
+    name: "Bait",
+    cost: 100,
+    rate: 2,
+    count: 0,
+    enabled: false,
+    buttonReference: baitButton,
+    description: "Bring more fish to you with *Bait*!"
+  },
+  {
+    name: "Fish Finder",
+    cost: 500,
+    rate: 25,
+    count: 0,
+    enabled: false,
+    buttonReference: fishFinderButton,
+    description: "A Radar that leads you towards more fish"
+  },
+  {
+    name: "Crewmate",
+    cost: 1000,
+    rate: 50,
+    count: 0,
+    enabled: false,
+    buttonReference: crewButton,
+    description: "A little help goes a long way"
+  },
+  {
+    name: "Upgrade Ship",
+    cost: 5000,
+    rate: 100,
+    count: 0,
+    enabled: false,
+    buttonReference: upgradeShip,
+    description: "Manuever faster to find more fish!"
+  },
+  {
+    name: "Pet Shark",
+    cost: 20000,
+    rate: 200,
+    count: 0,
+    enabled: false,
+    buttonReference: petSharkButton,
+    description: "This shark is trained to hunt fish and return them to you"
+  },
 ];
-
-
 
 //Start the check for autoclicks
 //setInterval(autoClicker, 1000);
@@ -37,7 +98,7 @@ requestAnimationFrame(autoClicker);
 //Event Handler for clicking
 function handleEvent(event: Event) {
   if (event.type === "click") {
-    counter += 1;
+    counter += (1 + (availableItems[1].count / 2));
     updateText();
   }
 }
@@ -63,14 +124,16 @@ newDiv3.style.top = "20px"; // Move it 20px from the right edge
 newDiv3.style.right = "50px";
 app.append(newDiv3);
 
-
 const globalInvText = document.createTextNode("");
 newDiv3.append(globalInvText);
 function updateInvText() {
   globalInvText.textContent = "";
-  for (let i = 0; i < availableItems.length; i++){
+  let tempBool: boolean = false
+  for (let i = 0; i < availableItems.length; i++) {
     if (availableItems[i].count > 0) {
-      globalInvText.textContent = ` ${availableItems[i].name} - ${availableItems[i].count} `;
+      if (tempBool) globalInvText.textContent += '|'
+      globalInvText.textContent += ` ${availableItems[i].name} - ${availableItems[i].count} `;
+      tempBool = true
     }
   }
 }
@@ -78,19 +141,49 @@ function updateInvText() {
 //Append div where shop is
 app.appendChild(newDiv2);
 
-
 function handleBuyButtons(index: number) {
   //If Button has been used before we will disable and reenable it based on current fish count
   if (availableItems[index].enabled) {
-    if (counter < availableItems[index].cost && availableItems[index].buttonReference.disabled == false) {
+    if (
+      counter < availableItems[index].cost &&
+      availableItems[index].buttonReference.disabled == false
+    ) {
       availableItems[index].buttonReference.disabled = true;
-    } else if (counter >= availableItems[index].cost) availableItems[index].buttonReference.disabled = false;
+    } else if (counter >= availableItems[index].cost)
+      availableItems[index].buttonReference.disabled = false;
   } else {
     //Otherwise create the button
-    availableItems[index].buttonReference.textContent = `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} Fish`;
-    availableItems[index].buttonReference.addEventListener("click", function(event){
-      purchaseButton(event, index)
-    });
+    availableItems[index].buttonReference.textContent =
+      `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} Fish`;
+    //Description declaration
+    const descriptionText = document.createElement("desc")
+    descriptionText.textContent = availableItems[index].description;
+    descriptionText.style.position = "absolute"; 
+    descriptionText.hidden = true;
+    document.body.appendChild(descriptionText);
+    //Add Event Listeners --------
+    //On click attempt to purchase item
+    availableItems[index].buttonReference.addEventListener(
+      "click", 
+      function (event) {
+        purchaseButton(event, index);
+      }
+    );
+    // Hide and Show description based on if its inside the button or not
+    availableItems[index].buttonReference.addEventListener("mouseenter", function(){
+      descriptionText.hidden = false
+    })
+    availableItems[index].buttonReference.addEventListener("mouseleave", function(){
+      descriptionText.hidden = true
+    })
+    // Track Mouse for Description location only when hovering the button
+    availableItems[index].buttonReference.addEventListener("mousemove", function(event){
+      if (!descriptionText.hidden){
+        descriptionText.style.left = event.pageX + 10 + "px";
+        descriptionText.style.top = event.pageY + 10 + "px";
+      }
+    })
+    
     newDiv2.appendChild(availableItems[index].buttonReference);
     availableItems[index].enabled = true;
   }
@@ -102,11 +195,11 @@ function purchaseButton(event: Event, index: number) {
       counter -= availableItems[index].cost;
       availableItems[index].count += 1;
       availableItems[index].cost *= purchaseMultiplier;
-      availableItems[index].buttonReference.textContent = `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} Fish`;
+      availableItems[index].buttonReference.textContent =
+        `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} Fish`;
     }
   }
 }
-
 
 //Run Once On Run
 updateText();
@@ -122,7 +215,7 @@ function updateText() {
   const newDiv = document.createElement("div");
   const cost = calculateCost();
   const newContent = document.createTextNode(
-    `${formatCounter} Fish! 🐟 ${cost.toFixed(1)}Fish/sec`,
+    `${formatCounter} Fish! 🐟 ${cost.toFixed(1)}Fish/sec`
   );
   newDiv.appendChild(newContent);
   app.append(newDiv);
@@ -134,9 +227,12 @@ function autoClicker() {
     saveLastTime = performance.now();
   }
   //Handle buttons. Mostly used to check if player has enough money to purchase and then enables/disables
-  for (let i = 0; i < availableItems.length; i++){
-    if (availableItems[i].enabled == true || counter >= availableItems[i].cost){
-      handleBuyButtons(i)
+  for (let i = 0; i < availableItems.length; i++) {
+    if (
+      availableItems[i].enabled == true ||
+      counter >= availableItems[i].cost
+    ) {
+      handleBuyButtons(i);
     }
   }
   //Handle time between frames
@@ -156,7 +252,7 @@ function autoClicker() {
 
 function calculateCost() {
   let value: number = 0;
-  for (let p = 0; p < availableItems.length; p++){
+  for (let p = 0; p < availableItems.length; p++) {
     value += availableItems[p].count * availableItems[p].rate;
   }
   return value;
