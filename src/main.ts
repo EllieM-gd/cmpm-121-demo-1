@@ -154,7 +154,7 @@ function handleBuyButtons(index: number) {
   } else {
     //Otherwise create the button
     availableItems[index].buttonReference.textContent =
-      `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} Fish`;
+      `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} 🐟`;
     //Description declaration
     const descriptionText = document.createElement("desc");
     descriptionText.textContent = availableItems[index].description;
@@ -205,7 +205,7 @@ function purchaseButton(event: Event, index: number) {
       availableItems[index].count += 1;
       availableItems[index].cost *= purchaseMultiplier;
       availableItems[index].buttonReference.textContent =
-        `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} Fish`;
+        `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} 🐟`;
     }
   }
 }
