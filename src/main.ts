@@ -5,8 +5,8 @@ const app: HTMLDivElement = document.querySelector("#app")!;
 const gameName = "Fish Game";
 document.title = gameName;
 
-//Declare number for counter
-let counter: number = 0;
+//Declare number for playerFishCount
+let playerFishCount: number = 0;
 const purchaseMultiplier: number = 1.15;
 
 interface Item {
@@ -26,7 +26,7 @@ const baitButton = document.createElement("button");
 const upgradeShip = document.createElement("button");
 const petSharkButton = document.createElement("button");
 
-const availableItems: Item[] = [
+const ItemHandler: Item[] = [
   {
     name: "Nets",
     cost: 10,
@@ -100,11 +100,10 @@ function updateText() {
   if (existingDiv) {
     app.removeChild(existingDiv);
   }
-  const formatCounter = counter.toFixed(2);
   const newDiv = document.createElement("div");
   const cost = calculateCost();
   const newContent = document.createTextNode(
-    `${formatCounter} Fish! 🐟 ${cost.toFixed(1)}Fish/sec`,
+    `${playerFishCount.toFixed(2)} Fish! 🐟 ${cost.toFixed(1)}Fish/sec`,
   );
   newDiv.appendChild(newContent);
   app.append(newDiv);
@@ -115,23 +114,21 @@ updateText();
 //Start the check for autoclicks
 //setInterval(autoClicker, 1000);
 requestAnimationFrame(autoClicker);
-//Event Handler for clicking
-function handleEvent(event: Event) {
-  if (event.type === "click") {
-    counter += 1 + availableItems[1].count / 2;
-    updateText();
-  }
-}
 
 //Header
 const header = document.createElement("h1");
 header.innerHTML = gameName;
 app.append(header);
 //Button
-const button = document.createElement("button");
-button.textContent = "🎣";
-button.addEventListener("click", handleEvent);
-app.appendChild(button);
+const fishCollectButton = document.createElement("button");
+fishCollectButton.textContent = "🎣";
+fishCollectButton.addEventListener("click", function (event) {
+  if (event.type === "click") {
+    playerFishCount += 1 + ItemHandler[1].count / 2;
+    updateText();
+  }
+});
+app.appendChild(fishCollectButton);
 //Shop Area
 const htmlDiv2 = document.createElement("div2");
 htmlDiv2.style.position = "absolute"; // Allow positioning the element
@@ -148,12 +145,12 @@ const globalInvText = document.createTextNode("");
 htmlDiv3.append(globalInvText);
 function updateInvText() {
   globalInvText.textContent = "";
-  let tempBool: boolean = false;
-  for (let i = 0; i < availableItems.length; i++) {
-    if (availableItems[i].count > 0) {
-      if (tempBool) globalInvText.textContent += "|";
-      globalInvText.textContent += ` ${availableItems[i].name} - ${availableItems[i].count} `;
-      tempBool = true;
+  let isFirstInInv: boolean = true;
+  for (let i = 0; i < ItemHandler.length; i++) {
+    if (ItemHandler[i].count > 0) {
+      if (!isFirstInInv) globalInvText.textContent += "|";
+      globalInvText.textContent += ` ${ItemHandler[i].name} - ${ItemHandler[i].count} `;
+      isFirstInInv = false;
     }
   }
 }
@@ -162,7 +159,7 @@ function updateInvText() {
 app.appendChild(htmlDiv2);
 
 function setupButton(itemRefence: Item, index: number) {
-  itemRefence.buttonReference.textContent = `${itemRefence.name} - ${itemRefence.cost.toFixed(0)} fish`;
+  itemRefence.buttonReference.textContent = `${itemRefence.name} - ${itemRefence.cost.toFixed(0)} 🐟`;
   //Description declaration
   const descriptionText = document.createElement("desc");
   descriptionText.textContent = itemRefence.description;
@@ -195,28 +192,28 @@ function setupButton(itemRefence: Item, index: number) {
 
 function handleBuyButtons(index: number) {
   //If Button has been used before we will disable and reenable it based on current fish count
-  if (availableItems[index].enabled) {
+  if (ItemHandler[index].enabled) {
     if (
-      counter < availableItems[index].cost &&
-      availableItems[index].buttonReference.disabled === false
+      playerFishCount < ItemHandler[index].cost &&
+      ItemHandler[index].buttonReference.disabled === false
     ) {
-      availableItems[index].buttonReference.disabled = true;
-    } else if (counter >= availableItems[index].cost)
-      availableItems[index].buttonReference.disabled = false;
+      ItemHandler[index].buttonReference.disabled = true;
+    } else if (playerFishCount >= ItemHandler[index].cost)
+      ItemHandler[index].buttonReference.disabled = false;
   } else {
     //Otherwise create the button
-    setupButton(availableItems[index], index);
+    setupButton(ItemHandler[index], index);
   }
 }
 
 function purchaseButton(event: Event, index: number) {
   if (event.type === "click") {
-    if (counter >= availableItems[index].cost) {
-      counter -= availableItems[index].cost;
-      availableItems[index].count += 1;
-      availableItems[index].cost *= purchaseMultiplier;
-      availableItems[index].buttonReference.textContent =
-        `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} fish`;
+    if (playerFishCount >= ItemHandler[index].cost) {
+      playerFishCount -= ItemHandler[index].cost;
+      ItemHandler[index].count += 1;
+      ItemHandler[index].cost *= purchaseMultiplier;
+      ItemHandler[index].buttonReference.textContent =
+        `${ItemHandler[index].name} - ${ItemHandler[index].cost.toFixed(0)} 🐟`;
     }
   }
 }
@@ -227,33 +224,32 @@ function autoClicker() {
     saveLastTime = performance.now();
   }
   //Handle buttons. Mostly used to check if player has enough money to purchase and then enables/disables
-  for (let i = 0; i < availableItems.length; i++) {
+  for (let i = 0; i < ItemHandler.length; i++) {
     if (
-      availableItems[i].enabled === true ||
-      counter >= availableItems[i].cost
+      ItemHandler[i].enabled === true ||
+      playerFishCount >= ItemHandler[i].cost
     ) {
       handleBuyButtons(i);
     }
   }
   //Handle time between frames
-  const currentTime = performance.now();
-  const deltaTime = currentTime - saveLastTime;
+  const deltaTime = performance.now() - saveLastTime;
   //Calculate Cost
   const cost = calculateCost();
-  counter += (cost * deltaTime) / 1000;
+  playerFishCount += (cost * deltaTime) / 1000;
   //Update Text on screen
   updateText();
   updateInvText();
   //Save Time
   saveLastTime = performance.now();
-  //Run Again
+  //Run Again next frame
   requestAnimationFrame(autoClicker);
 }
 
 function calculateCost(): number {
-  let value: number = 0;
-  for (let p = 0; p < availableItems.length; p++) {
-    value += availableItems[p].count * availableItems[p].rate;
+  let returnCost: number = 0;
+  for (let p = 0; p < ItemHandler.length; p++) {
+    returnCost += ItemHandler[p].count * ItemHandler[p].rate;
   }
-  return value;
+  return returnCost;
 }
