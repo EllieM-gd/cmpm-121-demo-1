@@ -92,6 +92,26 @@ const availableItems: Item[] = [
   },
 ];
 
+//Function to update the text on the screen.
+function updateText() {
+  //Get any existing version of this text
+  const existingDiv = app.querySelector("div");
+  //Delete if it exists
+  if (existingDiv) {
+    app.removeChild(existingDiv);
+  }
+  const formatCounter = counter.toFixed(2);
+  const newDiv = document.createElement("div");
+  const cost = calculateCost();
+  const newContent = document.createTextNode(
+    `${formatCounter} Fish! 🐟 ${cost.toFixed(1)}Fish/sec`,
+  );
+  newDiv.appendChild(newContent);
+  app.append(newDiv);
+}
+//Run Once On Run
+updateText();
+
 //Start the check for autoclicks
 //setInterval(autoClicker, 1000);
 requestAnimationFrame(autoClicker);
@@ -113,19 +133,19 @@ button.textContent = "🎣";
 button.addEventListener("click", handleEvent);
 app.appendChild(button);
 //Shop Area
-const newDiv2 = document.createElement("div2");
-newDiv2.style.position = "absolute"; // Allow positioning the element
-newDiv2.style.right = "20px"; // Move it 20px from the right edge
-newDiv2.style.top = "50px"; // Move it 50px from the top
+const htmlDiv2 = document.createElement("div2");
+htmlDiv2.style.position = "absolute"; // Allow positioning the element
+htmlDiv2.style.right = "20px"; // Move it 20px from the right edge
+htmlDiv2.style.top = "50px"; // Move it 50px from the top
 //Display Area
-const newDiv3 = document.createElement("div3");
-newDiv3.style.position = "absolute"; // Allow positioning the element
-newDiv3.style.top = "20px"; // Move it 20px from the right edge
-newDiv3.style.right = "50px";
-app.append(newDiv3);
+const htmlDiv3 = document.createElement("div3");
+htmlDiv3.style.position = "absolute"; // Allow positioning the element
+htmlDiv3.style.top = "20px"; // Move it 20px from the right edge
+htmlDiv3.style.right = "50px";
+app.append(htmlDiv3);
 
 const globalInvText = document.createTextNode("");
-newDiv3.append(globalInvText);
+htmlDiv3.append(globalInvText);
 function updateInvText() {
   globalInvText.textContent = "";
   let tempBool: boolean = false;
@@ -139,62 +159,53 @@ function updateInvText() {
 }
 
 //Append div where shop is
-app.appendChild(newDiv2);
+app.appendChild(htmlDiv2);
+
+function setupButton(itemRefence: Item, index: number) {
+  itemRefence.buttonReference.textContent = `${itemRefence.name} - ${itemRefence.cost.toFixed(0)} fish`;
+  //Description declaration
+  const descriptionText = document.createElement("desc");
+  descriptionText.textContent = itemRefence.description;
+  descriptionText.style.position = "absolute";
+  descriptionText.hidden = true;
+  document.body.appendChild(descriptionText);
+  //Add Event Listeners --------
+  //On click attempt to purchase item
+  itemRefence.buttonReference.addEventListener("click", function (event) {
+    purchaseButton(event, index);
+  });
+  // Hide and Show description based on if its inside the button or not
+  itemRefence.buttonReference.addEventListener("mouseenter", function () {
+    descriptionText.hidden = false;
+  });
+  itemRefence.buttonReference.addEventListener("mouseleave", function () {
+    descriptionText.hidden = true;
+  });
+  // Track Mouse for Description location only when hovering the button
+  itemRefence.buttonReference.addEventListener("mousemove", function (event) {
+    if (!descriptionText.hidden) {
+      descriptionText.style.left = event.pageX + 10 + "px";
+      descriptionText.style.top = event.pageY + 10 + "px";
+    }
+  });
+
+  htmlDiv2.appendChild(itemRefence.buttonReference);
+  itemRefence.enabled = true;
+}
 
 function handleBuyButtons(index: number) {
   //If Button has been used before we will disable and reenable it based on current fish count
   if (availableItems[index].enabled) {
     if (
       counter < availableItems[index].cost &&
-      availableItems[index].buttonReference.disabled == false
+      availableItems[index].buttonReference.disabled === false
     ) {
       availableItems[index].buttonReference.disabled = true;
     } else if (counter >= availableItems[index].cost)
       availableItems[index].buttonReference.disabled = false;
   } else {
     //Otherwise create the button
-    availableItems[index].buttonReference.textContent =
-      `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} 🐟`;
-    //Description declaration
-    const descriptionText = document.createElement("desc");
-    descriptionText.textContent = availableItems[index].description;
-    descriptionText.style.position = "absolute";
-    descriptionText.hidden = true;
-    document.body.appendChild(descriptionText);
-    //Add Event Listeners --------
-    //On click attempt to purchase item
-    availableItems[index].buttonReference.addEventListener(
-      "click",
-      function (event) {
-        purchaseButton(event, index);
-      },
-    );
-    // Hide and Show description based on if its inside the button or not
-    availableItems[index].buttonReference.addEventListener(
-      "mouseenter",
-      function () {
-        descriptionText.hidden = false;
-      },
-    );
-    availableItems[index].buttonReference.addEventListener(
-      "mouseleave",
-      function () {
-        descriptionText.hidden = true;
-      },
-    );
-    // Track Mouse for Description location only when hovering the button
-    availableItems[index].buttonReference.addEventListener(
-      "mousemove",
-      function (event) {
-        if (!descriptionText.hidden) {
-          descriptionText.style.left = event.pageX + 10 + "px";
-          descriptionText.style.top = event.pageY + 10 + "px";
-        }
-      },
-    );
-
-    newDiv2.appendChild(availableItems[index].buttonReference);
-    availableItems[index].enabled = true;
+    setupButton(availableItems[index], index);
   }
 }
 
@@ -205,29 +216,9 @@ function purchaseButton(event: Event, index: number) {
       availableItems[index].count += 1;
       availableItems[index].cost *= purchaseMultiplier;
       availableItems[index].buttonReference.textContent =
-        `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} 🐟`;
+        `${availableItems[index].name} - ${availableItems[index].cost.toFixed(0)} fish`;
     }
   }
-}
-
-//Run Once On Run
-updateText();
-//Function to update the text on the screen.
-function updateText() {
-  //Get any existing version of this text
-  const existingDiv = app.querySelector("div");
-  //Delete if it exists
-  if (existingDiv) {
-    app.removeChild(existingDiv);
-  }
-  const formatCounter = counter.toFixed(2);
-  const newDiv = document.createElement("div");
-  const cost = calculateCost();
-  const newContent = document.createTextNode(
-    `${formatCounter} Fish! 🐟 ${cost.toFixed(1)}Fish/sec`,
-  );
-  newDiv.appendChild(newContent);
-  app.append(newDiv);
 }
 
 let saveLastTime: number | undefined;
@@ -238,7 +229,7 @@ function autoClicker() {
   //Handle buttons. Mostly used to check if player has enough money to purchase and then enables/disables
   for (let i = 0; i < availableItems.length; i++) {
     if (
-      availableItems[i].enabled == true ||
+      availableItems[i].enabled === true ||
       counter >= availableItems[i].cost
     ) {
       handleBuyButtons(i);
@@ -259,7 +250,7 @@ function autoClicker() {
   requestAnimationFrame(autoClicker);
 }
 
-function calculateCost() {
+function calculateCost(): number {
   let value: number = 0;
   for (let p = 0; p < availableItems.length; p++) {
     value += availableItems[p].count * availableItems[p].rate;
