@@ -2,7 +2,7 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
-const gameName = "Fish Game";
+const gameName = "Fishing Game";
 document.title = gameName;
 
 //Declare number for playerFishCount
@@ -158,36 +158,36 @@ function updateInvText() {
 //Append div where shop is
 app.appendChild(htmlDiv2);
 
-function setupButton(itemRefence: Item, index: number) {
-  itemRefence.buttonReference.textContent = `${itemRefence.name} - ${itemRefence.cost.toFixed(0)} 🐟`;
+function setupButton(itemReference: Item, index: number) {
+  itemReference.buttonReference.textContent = `${itemReference.name} - ${itemReference.cost.toFixed(0)} 🐟\n ${itemReference.rate}/sec`;
   //Description declaration
   const descriptionText = document.createElement("desc");
-  descriptionText.textContent = itemRefence.description;
+  descriptionText.textContent = itemReference.description;
   descriptionText.style.position = "absolute";
   descriptionText.hidden = true;
   document.body.appendChild(descriptionText);
   //Add Event Listeners --------
   //On click attempt to purchase item
-  itemRefence.buttonReference.addEventListener("click", function (event) {
+  itemReference.buttonReference.addEventListener("click", function (event) {
     purchaseButton(event, index);
   });
   // Hide and Show description based on if its inside the button or not
-  itemRefence.buttonReference.addEventListener("mouseenter", function () {
+  itemReference.buttonReference.addEventListener("mouseenter", function () {
     descriptionText.hidden = false;
   });
-  itemRefence.buttonReference.addEventListener("mouseleave", function () {
+  itemReference.buttonReference.addEventListener("mouseleave", function () {
     descriptionText.hidden = true;
   });
   // Track Mouse for Description location only when hovering the button
-  itemRefence.buttonReference.addEventListener("mousemove", function (event) {
+  itemReference.buttonReference.addEventListener("mousemove", function (event) {
     if (!descriptionText.hidden) {
       descriptionText.style.left = event.pageX + 10 + "px";
       descriptionText.style.top = event.pageY + 10 + "px";
     }
   });
 
-  htmlDiv2.appendChild(itemRefence.buttonReference);
-  itemRefence.enabled = true;
+  htmlDiv2.appendChild(itemReference.buttonReference);
+  itemReference.enabled = true;
 }
 
 function handleBuyButtons(index: number) {
@@ -213,7 +213,7 @@ function purchaseButton(event: Event, index: number) {
       ItemHandler[index].count += 1;
       ItemHandler[index].cost *= purchaseMultiplier;
       ItemHandler[index].buttonReference.textContent =
-        `${ItemHandler[index].name} - ${ItemHandler[index].cost.toFixed(0)} 🐟`;
+        `${ItemHandler[index].name} - ${ItemHandler[index].cost.toFixed(0)} 🐟\n ${ItemHandler[index].rate}/sec`;
     }
   }
 }
